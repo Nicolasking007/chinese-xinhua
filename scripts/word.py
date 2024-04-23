@@ -8,8 +8,9 @@ description: 抓取下载汉字并保存
 
 """
 
-import requests,json
+import requests, json
 from bs4 import BeautifulSoup
+
 
 def downloader(url):
     """
@@ -20,7 +21,7 @@ def downloader(url):
     if response.status_code != 200:
         print(f'{url} is failed!')
         return
-    
+
     print(f'{url} is parsing')
     html = BeautifulSoup(response.content.decode('gbk', errors='ignore'), "lxml")
     a = html.find_all('a', target="_blank")
@@ -36,18 +37,20 @@ def downloader(url):
             print(f'{words[i]} is failed!')
             continue
 
-        wordhtml = BeautifulSoup(response.content.decode('gbk', errors='ignore').replace('<br/>', '\n').replace('<br>', '\n')\
-                     , "lxml")
+        wordhtml = BeautifulSoup(
+            response.content.decode('gbk', errors='ignore').replace('<br/>', '\n').replace('<br>', '\n') \
+            , "lxml")
         td = wordhtml.find_all('table')[4].find_all('td')
         explanation = td[12].text.strip()
-        res.append({'word': td[1].text.strip(),\
-                    'oldword': td[4].text.strip(),\
-                    'strokes': td[6].text.strip(),\
-                    'pinyin': td[8].text.strip(),\
-                    'radicals': td[10].text.strip(),\
-                    'explanation': explanation[explanation.find('\r\n'):].strip(),\
+        res.append({'word': td[1].text.strip(),
+                    'oldword': td[4].text.strip(),
+                    'strokes': td[6].text.strip(),
+                    'pinyin': td[8].text.strip(),
+                    'radicals': td[10].text.strip(),
+                    'explanation': explanation[explanation.find('\r\n'):].strip(),
                     'more': td[14].text.strip()})
     return res
+
 
 if __name__ == '__main__':
     res = downloader('http://www.zd9999.com/zi/index.htm')

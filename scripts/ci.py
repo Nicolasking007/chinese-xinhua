@@ -6,10 +6,12 @@ description: 多线程抓取下载词语并保存
 
 """
 
-import requests, csv
-from bs4 import BeautifulSoup
 import time
 from multiprocessing.dummy import Pool as ThreadPool
+import csv
+import requests
+from bs4 import BeautifulSoup
+
 
 def downloader(url):
     """
@@ -18,7 +20,7 @@ def downloader(url):
     res = []
     try:
         response = requests.get(url)
-        
+
         if response.status_code != 200:
             print(f'{url} is failed!')
             return len(res)
@@ -26,20 +28,21 @@ def downloader(url):
         print(f'{url} is parsing')
         html = BeautifulSoup(response.content.decode('gbk', errors='ignore'), "lxml")
         a = html.find_all('a', target="_blank")
-        
+
         prefix = 'http://www.zd9999.com'
         words = [prefix + w.get('href') for w in a]
-    
+
         for i in range(0, len(words)):
             print(f'{[words[i]]} is parsing')
 
             try:
-                response  = requests.get(words[i])
-                wordhtml = BeautifulSoup(response.content.decode('gbk', errors='ignore').replace('<br/>', '\n').replace('<br>', '\n')\
-                            , "lxml")
+                response = requests.get(words[i])
+                wordhtml = BeautifulSoup(
+                    response.content.decode('gbk', errors='ignore').replace('<br/>', '\n').replace('<br>', '\n')
+                    , "lxml")
                 td = wordhtml.find_all('table')[5].find_all('td')
                 res.append([td[0].text.strip(), td[1].text.strip()])
-     
+
             except Exception as e:
                 with open('../data/error.csv', mode='a+', encoding='utf-8', newline='') as error_file:
                     csv.writer(error_file).writerows([0, e, words[i]])
@@ -53,8 +56,9 @@ def downloader(url):
 
     with open('../data/ci.csv', mode='a+', encoding='utf-8', newline='') as csv_file:
         csv.writer(csv_file).writerows(res)
-    
+
     return len(res)
+
 
 if __name__ == '__main__':
     start_time = time.time()
@@ -66,7 +70,7 @@ if __name__ == '__main__':
     responses = pool.map(downloader, urls)
     pool.close()
     pool.join()
-     
+
     end_time = time.time()
-    
+
     print(f'总共耗时 {end_time - start_time}, 抓取了 {sum(responses)} 条数据')
