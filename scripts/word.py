@@ -8,7 +8,8 @@ description: 抓取下载汉字并保存
 
 """
 
-import requests, json
+import json
+import requests
 from bs4 import BeautifulSoup
 
 
