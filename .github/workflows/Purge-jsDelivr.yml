@@ -16,6 +16,10 @@ jobs:
         with:
           ref: ${{ github.ref }}
 
+      - name: Setup Git
+        run: |
+          sudo apt-get install git -y          
+
       - name: Determine Changed Files
         id: changed_files
         run: |
