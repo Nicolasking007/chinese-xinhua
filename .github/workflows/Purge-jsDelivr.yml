@@ -19,7 +19,7 @@ jobs:
       - name: Determine Changed Files
         id: changed_files
         run: |
-          echo "changed_files=$(git diff --name-only HEAD^ HEAD | grep '^public/')" >> $GITHUB_OUTPUT
+          echo "changed_files=$(git diff --name-only HEAD^ HEAD | grep '^data/')" >> $GITHUB_OUTPUT
 
       - name: Determine CDN URLs to Purge
         if: steps.changed_files.outputs.changed_files != ''
