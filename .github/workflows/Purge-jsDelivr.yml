@@ -18,7 +18,8 @@ jobs:
 
       - name: Setup Git
         run: |
-          sudo apt-get install git -y          
+          sudo apt-get install git -y
+          git --version  # 输出 Git 版本以确认是否安装成功
 
       - name: Determine Changed Files
         id: changed_files
@@ -26,8 +27,11 @@ jobs:
           git fetch origin master
           git diff --name-only origin/master HEAD | grep '^data/' > changed_files.txt
           if [ -s changed_files.txt ]; then
+            echo "Changed files found:"
+            cat changed_files.txt
             echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_ENV
           else
+            echo "No changed files found."
             echo "changed_files=" >> $GITHUB_ENV
           fi
 
