@@ -20,8 +20,12 @@ jobs:
         id: changed_files
         run: |
           git fetch origin master
-          changed_files=$(git diff --name-only origin/master HEAD | grep '^data/')
-          echo "changed_files=$changed_files" >> $GITHUB_ENV
+          git diff --name-only origin/master HEAD | grep '^data/' > changed_files.txt
+          if [ -s changed_files.txt ]; then
+            echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_ENV
+          else
+            echo "changed_files=" >> $GITHUB_ENV
+          fi
 
       - name: Output Changed Files
         run: |
