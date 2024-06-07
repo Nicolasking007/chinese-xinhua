@@ -1,0 +1,40 @@
+name: Purge jsDelivr Cache
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'public/**'
+
+jobs:
+  purge-jsdelivr-cache:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Determine Changed Files
+        id: changed_files
+        run: |
+          echo "changed_files=$(git diff --name-only HEAD^ HEAD | grep '^public/')" >> $GITHUB_OUTPUT
+
+      - name: Determine CDN URLs to Purge
+        if: steps.changed_files.outputs.changed_files != ''
+        id: purge_urls
+        run: |
+          baseUrl="https://cdn.jsdelivr.net/gh/${{ github.repository }}@latest"
+          urls=""
+          for f in ${{ steps.changed_files.outputs.changed_files }}; do
+            urls+="${baseUrl}/${f},"
+          done
+          echo "urls=${urls%,*}" >> $GITHUB_OUTPUT
+
+      - name: Purge CDN Caches
+        if: steps.changed_files.outputs.changed_files != ''
+        uses: egad13/purge-jsdelivr-cache@v1
+        with:
+          url: ${{ steps.purge_urls.outputs.urls }}
+          token: ${{ secrets.JSDELIVR_TOKEN }}
