@@ -3,7 +3,7 @@ name: Purge jsDelivr Cache
 on:
   push:
     branches:
-      - master
+      - main
     paths:
       - 'data/**'
 
@@ -19,7 +19,9 @@ jobs:
       - name: Determine Changed Files
         id: changed_files
         run: |
-          echo "changed_files=$(git diff --name-only HEAD^ HEAD | grep '^data/')" >> $GITHUB_OUTPUT
+          git fetch origin main
+          changed_files=$(git diff --name-only origin/main HEAD | grep '^data/')
+          echo "changed_files=${changed_files}" >> $GITHUB_OUTPUT
 
       - name: Determine CDN URLs to Purge
         if: steps.changed_files.outputs.changed_files != ''
