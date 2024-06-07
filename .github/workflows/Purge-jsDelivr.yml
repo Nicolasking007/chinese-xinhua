@@ -20,31 +20,29 @@ jobs:
         id: changed_files
         run: |
           git fetch origin master
-          git diff --name-only origin/master HEAD | grep '^data/' || echo "No changes in 'data/'"
           changed_files=$(git diff --name-only origin/master HEAD | grep '^data/')
-          echo "changed_files=${changed_files}" >> $GITHUB_OUTPUT
+          echo "changed_files=$changed_files" >> $GITHUB_ENV
 
       - name: Output Changed Files
-        if: steps.changed_files.outputs.changed_files != ''
-        run: echo "Changed files: ${{ steps.changed_files.outputs.changed_files }}"
+        run: echo "Changed files: ${{ env.changed_files }}"
 
       - name: Determine CDN URLs to Purge
-        if: steps.changed_files.outputs.changed_files != ''
+        if: env.changed_files != ''
         id: purge_urls
         run: |
           baseUrl="https://cdn.jsdelivr.net/gh/${{ github.repository }}@latest"
           urls=""
-          for f in ${{ steps.changed_files.outputs.changed_files }}; do
+          for f in ${{ env.changed_files }}; do
             urls+="${baseUrl}/${f},"
           done
           echo "urls=${urls%,*}" >> $GITHUB_OUTPUT
 
       - name: Output CDN URLs
-        if: steps.changed_files.outputs.changed_files != ''
+        if: env.changed_files != ''
         run: echo "CDN URLs to purge: ${{ steps.purge_urls.outputs.urls }}"
 
       - name: Purge CDN Caches
-        if: steps.changed_files.outputs.changed_files != ''
+        if: env.changed_files != ''
         uses: egad13/purge-jsdelivr-cache@v1
         with:
           url: ${{ steps.purge_urls.outputs.urls }}
