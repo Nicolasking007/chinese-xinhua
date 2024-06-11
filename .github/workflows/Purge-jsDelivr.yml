@@ -13,8 +13,6 @@ jobs:
     steps:
       - name: Checkout master
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.ref }}
 
       - name: Setup Git
         run: |
@@ -25,7 +23,7 @@ jobs:
         id: changed_files
         run: |
           git fetch origin master
-          git diff --name-only origin/master HEAD > diff_output.txt || true
+          git diff --name-only FETCH_HEAD HEAD > diff_output.txt || true
           cat diff_output.txt  # Output git diff results for debugging
           grep '^data/' diff_output.txt > changed_files.txt || true
           if [ -s changed_files.txt ]; then
