@@ -23,10 +23,10 @@ jobs:
         id: changed_files
         run: |
           echo "获取最后一次提交变更的文件..."
-          git diff-tree --no-commit-id --name-only -r HEAD > diff_output.txt
-          echo "Git diff-tree 结果:"
-          cat diff_output.txt  # 输出 git diff-tree 结果以进行调试
-          grep '^data/' diff_output.txt > changed_files.txt
+          git log -1 --name-only --pretty=format: > diff_output.txt || true
+          echo "Git log 结果:"
+          cat diff_output.txt  # 输出 git log 结果以进行调试
+          grep '^data/' diff_output.txt > changed_files.txt || true
           echo "筛选后的变更文件:"
           cat changed_files.txt || true  # 输出筛选后的文件列表进行调试
           if [ -s changed_files.txt ]; then
