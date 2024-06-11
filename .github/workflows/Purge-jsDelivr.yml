@@ -1,4 +1,4 @@
-name: Purge jsDelivr Cache
+name: 清除 jsDelivr 缓存
 
 on:
   push:
@@ -11,35 +11,35 @@ jobs:
   purge-jsdelivr-cache:
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout master
+      - name: 检出 master 分支
         uses: actions/checkout@v3
 
-      - name: Setup Git
+      - name: 安装 Git
         run: |
           sudo apt-get install git -y
-          git --version  # Output Git version to confirm installation
+          git --version  # 输出 Git 版本以确认安装成功
 
-      - name: Determine Changed Files
+      - name: 确定变更的文件
         id: changed_files
         run: |
           git fetch origin master
           git diff --name-only FETCH_HEAD HEAD > diff_output.txt || true
-          cat diff_output.txt  # Output git diff results for debugging
+          cat diff_output.txt  # 输出 git diff 结果以进行调试
           grep '^data/' diff_output.txt > changed_files.txt || true
           if [ -s changed_files.txt ]; then
-            echo "Changed files found:"
+            echo "发现变更的文件:"
             cat changed_files.txt
             echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_ENV
           else
-            echo "No changed files found."
+            echo "没有发现变更的文件。"
             echo "changed_files=" >> $GITHUB_ENV
           fi
 
-      - name: Output Changed Files
+      - name: 输出变更的文件
         run: |
-          echo "Changed files: ${{ env.changed_files }}"
+          echo "变更的文件: ${{ env.changed_files }}"
 
-      - name: Determine CDN URLs to Purge
+      - name: 确定需要清除的 CDN URL
         if: env.changed_files != ''
         id: purge_urls
         run: |
@@ -50,12 +50,12 @@ jobs:
           done
           echo "urls=${urls%,*}" >> $GITHUB_OUTPUT
 
-      - name: Output CDN URLs
+      - name: 输出 CDN URL
         if: env.changed_files != ''
         run: |
-          echo "CDN URLs to purge: ${{ steps.purge_urls.outputs.urls }}"
+          echo "需要清除的 CDN URL: ${{ steps.purge_urls.outputs.urls }}"
 
-      - name: Purge CDN Caches
+      - name: 清除 CDN 缓存
         if: env.changed_files != ''
         uses: egad13/purge-jsdelivr-cache@v1
         with:
