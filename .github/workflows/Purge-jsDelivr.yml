@@ -1,4 +1,4 @@
-name: Purge jsDelivr Cache
+name: purge-jsdelivr-cache
 
 on:
   push:
@@ -22,16 +22,17 @@ jobs:
       - name: 确定最后一次提交变更的文件
         id: changed_files
         run: |
-          git diff-tree --no-commit-id --name-only -r HEAD > diff_output.txt || true
-          echo "Git diff-tree result:"
+          echo "获取最后一次提交变更的文件..."
+          git diff-tree --no-commit-id --name-only -r HEAD > diff_output.txt
+          echo "Git diff-tree 结果:"
           cat diff_output.txt  # 输出 git diff-tree 结果以进行调试
-          grep '^data/' diff_output.txt > changed_files.txt || true
-          echo "Filtered changed files:"
+          grep '^data/' diff_output.txt > changed_files.txt
+          echo "筛选后的变更文件:"
           cat changed_files.txt || true  # 输出筛选后的文件列表进行调试
           if [ -s changed_files.txt ]; then
             echo "发现变更的文件:"
             cat changed_files.txt
-            echo "changed_files=$(cat changed_files.txt)" >> $GITHUB_ENV
+            echo "changed_files=$(cat changed_files.txt | tr '\n' ' ')" >> $GITHUB_ENV
           else
             echo "没有发现变更的文件。"
             echo "changed_files=" >> $GITHUB_ENV
@@ -47,7 +48,7 @@ jobs:
         run: |
           baseUrl="https://cdn.jsdelivr.net/gh/${{ github.repository }}@latest"
           urls=""
-          for f in $(cat changed_files.txt); do
+          for f in ${{ env.changed_files }}; do
             urls+="${baseUrl}/${f},"
           done
           echo "urls=${urls%,*}" >> $GITHUB_OUTPUT
