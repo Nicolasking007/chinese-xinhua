@@ -19,15 +19,15 @@ jobs:
       - name: Setup Git
         run: |
           sudo apt-get install git -y
-          git --version  # 输出 Git 版本以确认是否安装成功
+          git --version  # Output Git version to confirm installation
 
       - name: Determine Changed Files
         id: changed_files
         run: |
           git fetch origin master
-          git diff --name-only origin/master HEAD > diff_output.txt
-          cat diff_output.txt  # 输出 git diff 结果以进行调试
-          grep '^data/' diff_output.txt > changed_files.txt
+          git diff --name-only origin/master HEAD > diff_output.txt || true
+          cat diff_output.txt  # Output git diff results for debugging
+          grep '^data/' diff_output.txt > changed_files.txt || true
           if [ -s changed_files.txt ]; then
             echo "Changed files found:"
             cat changed_files.txt
