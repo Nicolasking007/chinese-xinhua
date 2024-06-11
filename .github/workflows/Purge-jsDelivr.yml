@@ -19,13 +19,15 @@ jobs:
           sudo apt-get install git -y
           git --version  # 输出 Git 版本以确认安装成功
 
-      - name: 确定变更的文件
+      - name: 确定最后一次提交变更的文件
         id: changed_files
         run: |
-          git fetch origin master
-          git diff --name-only FETCH_HEAD HEAD > diff_output.txt || true
-          cat diff_output.txt  # 输出 git diff 结果以进行调试
+          git diff-tree --no-commit-id --name-only -r HEAD > diff_output.txt || true
+          echo "Git diff-tree result:"
+          cat diff_output.txt  # 输出 git diff-tree 结果以进行调试
           grep '^data/' diff_output.txt > changed_files.txt || true
+          echo "Filtered changed files:"
+          cat changed_files.txt || true  # 输出筛选后的文件列表进行调试
           if [ -s changed_files.txt ]; then
             echo "发现变更的文件:"
             cat changed_files.txt
