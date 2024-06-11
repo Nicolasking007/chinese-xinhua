@@ -1,5 +1,5 @@
 # chinese-xinhua  
-[![清除 jsDelivr 缓存](https://github.com/Nicolasking007/chinese-xinhua/actions/workflows/Purge-jsDelivr.yml/badge.svg)](https://github.com/Nicolasking007/chinese-xinhua/actions/workflows/Purge-jsDelivr.yml)
+[![Purge jsDelivr Cache](https://github.com/Nicolasking007/chinese-xinhua/actions/workflows/Purge-jsDelivr.yml/badge.svg)](https://github.com/Nicolasking007/chinese-xinhua/actions/workflows/Purge-jsDelivr.yml)
 
 
 中华新华字典数据库和 API 。收录包括 14032 条歇后语，16142 个汉字，264434 个词语，31648 个成语。
