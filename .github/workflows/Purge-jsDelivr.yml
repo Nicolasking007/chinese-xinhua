@@ -1,4 +1,4 @@
-name: 清除 jsDelivr 缓存
+name: Purge jsDelivr Cache
 
 on:
   push:
